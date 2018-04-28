@@ -25,10 +25,82 @@
 import time
 import os
 import rospy
+import numpy as np
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 from dynamixel_msgs.msg import JointState
 
+
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+# Set up the pins what will need for us
+DIR = 20
+STEP = 21
+ENABLE = 16
+GPIO.setup(DIR, GPIO.OUT)
+GPIO.setup(STEP, GPIO.OUT)
+GPIO.setup(ENABLE, GPIO.OUT)
+GPIO.output(ENABLE, False) #/EN low enable
+
+step_speed = 500
+step_pin = GPIO.PWM(STEP,step_speed)
+
+MICRO_STEPPING = 1
+FULL_STEPS = 200.0
+STEPS_PER_DEGREE = float(360.0/(FULL_STEPS*MICRO_STEPPING)) #convert degree to steps 
+
+def moveMotor(goal_rad):
+    #convert rad to degree
+
+    #given abs goal_rad, we need compute error from current_pos to goal
+    error_rad = goal_rad - motor_state.current_pos
+
+    #publish a motor state message before move
+    motor_state.error = error_rad
+    motor_state.goal_pos = goal_rad 
+    motor_state.is_moving = True
+    pub.publish(motor_state)
+
+
+    error_degree = np.rad2deg(error_rad)
+    goal_steps = int(error_degree / STEPS_PER_DEGREE)
+
+    #check direction 
+    if goal_steps < 0:
+        GPIO.output(DIR, False)
+        goal_steps = -goal_steps
+    else:
+        GPIO.output(DIR, True)
+
+
+
+    steps = 0
+    while steps < goal_steps):
+        step_pin.start(1)
+        steps += 1
+        if steps % 10 == 0: #publish message every 10 steps
+            remaining_steps = (goal_steps - steps)
+            moved_rad = np.deg2rad(steps*STEPS_PER_DEGREE)
+            new_error_degree = remaining_steps*STEPS_PER_DEGREE
+            new_error_rad = np.deg2rad(new_error_degree)
+
+            motor_state.current_pos += moved_rad
+            motor_state.error = new_error_rad
+            #motor_state.goal_pos = goal_rad 
+            #motor_state.is_moving = True
+            #pub.publish(motor_state)
+            print("Remaining Steps: %d" % remaining_steps)
+        time.sleep(0.01)
+    #after move
+    motor_state.error = 0.0
+    motor_state.current_pos = goal_rad 
+    motor_state.goal_pos = goal_rad 
+    motor_state.is_moving = False 
+    #pub.publish(motor_state)
+
+    step_pin.stop()
 
 
 # The function is the "callback" that handles the messages as they come in: 
@@ -36,21 +108,26 @@ def callback(msg):
     motor_command =  msg.data #get motor angle command
     print("I got motor command: "+str(motor_command))
 
-    motor_state = JointState()
-    motor_state.current_pos = motor_command
-    motor_state.error = 0.0
-    pub.publish(motor_state)
+    moveMotor(motor_command)
+    #pub.publish(motor_state)
     
-    rate = rospy.Rate(1)
-    rate.sleep()
 
 rospy.init_node('Stepper_Driver')
+motor_state = JointState()
+motor_state.current_pos = 0.0
+motor_state.error = 0.0
+motor_state.goal_pos = 0.0
+motor_state.is_moving = False 
+
 sub = rospy.Subscriber('/tilt_controller/command', Float64, callback)
 pub = rospy.Publisher('/tilt_controller/state', JointState, queue_size=10)
 
+rate = rospy.Rate(10) #10Hz
 
 def main():
-    rospy.spin()
+    while not rospy.is_shutdown():
+        pub.publish(motor_state)
+        rate.sleep()
 
 if __name__ == '__main__':
     main()
