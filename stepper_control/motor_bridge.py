@@ -77,7 +77,7 @@ def moveMotor(goal_rad):
 
 
     steps = 0
-    while steps < goal_steps):
+    while steps < goal_steps:
         step_pin.start(1)
         steps += 1
         if steps % 10 == 0: #publish message every 10 steps
