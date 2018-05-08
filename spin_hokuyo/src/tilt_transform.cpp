@@ -21,7 +21,7 @@ void obtainValues(const dynamixel_msgs::JointState &msg)
     tf::Transform transform;
     transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
     tf::Quaternion q;
-    q.setRPY(pos, 0, 0);
+    q.setRPY(0, -pos, 0);
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "servo", "laser"));
 }

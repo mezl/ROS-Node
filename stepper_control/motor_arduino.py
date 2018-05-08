@@ -60,12 +60,16 @@ def moveMotor(goal_rad):
     time.sleep(.1)
 
 
+    motor_finished = False
     while True:
-        result = ser.readline().splitlines()[0]
         try:
+            result = ser.readline().splitlines()[0]
             #print("Get Result : %s" % result) 
             res = result.split(",")
             #print(res)
+            #if message is not intact, skip
+            if len(res) != 4:
+                continue
             current_pos = float(res[0])
             error       = float(res[1])
             goal_pos    = float(res[2])
@@ -73,22 +77,24 @@ def moveMotor(goal_rad):
 
             motor_state.current_pos = current_pos
             motor_state.error = error
-            motor_state.goal_pos = goal_pos
+            motor_state.goal_pos = goal_rad #use input, instead from arduino
             motor_state.is_moving = is_moving
             #pub.publish(motor_state)
             #print("Remaining Degree: %f" % np.rad2deg(error))
 
-            if(motor_state.error == 0 or not motor_state.is_moving): break
+            if(motor_state.error == 0 or not motor_state.is_moving): 
+                motor_finished = True
+                break
         except Exception as e:
-            print("Read Error")
+            print("Read Error:"+str(result))
             print(e)
             #break
         time.sleep(0.001)
 
     #after move
-    motor_state.error = 0.0
-    motor_state.current_pos = goal_rad 
-    motor_state.goal_pos = goal_rad 
+    #motor_state.error = 0.0
+    #motor_state.current_pos = goal_rad 
+    #motor_state.goal_pos = goal_rad 
     motor_state.is_moving = False 
     #pub.publish(motor_state)
 
@@ -113,7 +119,7 @@ motor_state.is_moving = False
 sub = rospy.Subscriber('/tilt_controller/command', Float64, callback)
 pub = rospy.Publisher('/tilt_controller/state', JointState, queue_size=10)
 
-rate = rospy.Rate(10) #10Hz
+rate = rospy.Rate(50) #10Hz
 
 def main():
     
