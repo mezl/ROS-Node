@@ -17,6 +17,11 @@
     type="tilt_motor"
     output="screen"
   />
+    <rosparam>
+        maximum: 165
+        minimum: -165
+        pause: 0.1
+    </rosparam>
 
   <node
     name="tilt_transform"
