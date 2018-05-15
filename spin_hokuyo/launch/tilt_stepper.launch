@@ -2,18 +2,26 @@
 
 <launch>
   <node
-    name="motor_bridge"
+    name="motor_arduino"
     pkg="stepper"
-    type="motor_bridge.py"
+    type="motor_arduino.py"
     output="screen"
   />
-
+    <rosparam>
+        port: "/dev/ttyUSB1"
+        baud: 115200
+    </rosparam>
   <node
     name="tilt_motor"
     pkg="spin_hokuyo"
     type="tilt_motor"
     output="screen"
   />
+    <rosparam>
+        maximum: 165
+        minimum: -165
+        pause: 0.1
+    </rosparam>
 
   <node
     name="tilt_transform"

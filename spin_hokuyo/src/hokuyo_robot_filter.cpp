@@ -23,17 +23,23 @@ void filter(const sensor_msgs::LaserScan msg)
    aux.scan_time = msg.scan_time;
    aux.range_min = 0;
    aux.range_max = inf;
-   aux.intensities[920];
+   aux.intensities[726];
 
-   //initialize the ranges array to the 920 values needed
-   aux.ranges.resize(920);
+   //URG-04LX-UG01 have range of 0~725 reading
+   //initialize the ranges array to the 926 values needed
+   aux.ranges.resize(726);
 
+
+   //0~240degree have reading of 726 scan line, each line is 0.33
+   //Crop First 0~30 degree and last 210~240 degree
+   //ranges[0~90] and range[636-726]
    //checks each ranges[] 0 -> 920 to see if it is the robot
-   //robot is defined as distances < 0.5 m
-   for(int n = 0; n < 921; n++)
+   //robot is defined as distances < 0.1 m
+   for(int n = 0; n < 726; n++)
    {
-      if (msg.ranges[n] > 0.5)
+      if (msg.ranges[n] > 0.1 && n > 90 && n < 636)
       { 
+
          //directly transfer ranges[] value if not robot
          aux.ranges[n] = msg.ranges[n];
       }
