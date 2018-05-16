@@ -23,6 +23,7 @@ int main(int argc, char** argv)
 {
   serial::Serial ser;
   std::string port;
+  int baud;
   std::string tf_parent_frame_id;
   std::string tf_frame_id;
   std::string frame_id;
@@ -41,7 +42,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "mpu6050_serial_to_imu_node");
 
   ros::NodeHandle private_node_handle("~");
-  private_node_handle.param<std::string>("port", port, "/dev/ttyUSB0");
+  private_node_handle.param<std::string>("port", port, "/dev/ttyACM0");
+  private_node_handle.param<int>("baud", baud, 115200);
   private_node_handle.param<std::string>("tf_parent_frame_id", tf_parent_frame_id, "imu_base");
   private_node_handle.param<std::string>("tf_frame_id", tf_frame_id, "imu_link");
   private_node_handle.param<std::string>("frame_id", frame_id, "imu_link");
@@ -82,7 +84,7 @@ int main(int argc, char** argv)
   std::string input;
   std::string read;
 
-  ROS_INFO_STREAM("Start to streaming from  " << port << " of arduino.");
+  ROS_INFO_STREAM("Start to streaming from  " << port << " of arduino baud rate: "<< baud << "....");
 
   bool init_success = false;
   while(ros::ok())
@@ -256,7 +258,7 @@ int main(int argc, char** argv)
         try
         {
           ser.setPort(port);
-          ser.setBaudrate(115200);
+          ser.setBaudrate(baud);
           serial::Timeout to = serial::Timeout::simpleTimeout(1000);
           ser.setTimeout(to);
           ser.open();

@@ -97,7 +97,7 @@ void setup()
   Serial.begin(115200);
   
   #ifdef __AVR_Atmega32U4__ // Yun 16Mhz, Micro, Leonardo, Esplora
-    //while (!Serial) ;
+    while (!Serial) ;
   #endif
   /*
   Since the Micro, like the Leonardo, uses software USB instead of a hardware USB-to-Serial adapter you need to add some code:
