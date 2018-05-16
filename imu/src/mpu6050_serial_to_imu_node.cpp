@@ -82,6 +82,9 @@ int main(int argc, char** argv)
   std::string input;
   std::string read;
 
+  ROS_INFO_STREAM("Start to streaming from  " << port << " of arduino.");
+
+  bool init_success = false;
   while(ros::ok())
   {
     try
@@ -109,6 +112,7 @@ int main(int argc, char** argv)
               if ((input.length() >= data_packet_start + 28) && (input.compare(data_packet_start + 26, 2, "\r\n") == 0))  //check if positions 26,27 exist, then test values
               {
                 ROS_DEBUG("seems to be a real data package: long enough and found end characters");
+
                 // get quaternion values
                 int16_t w = (((0xff &(char)input[data_packet_start + 2]) << 8) | 0xff &(char)input[data_packet_start + 3]);
                 int16_t x = (((0xff &(char)input[data_packet_start + 4]) << 8) | 0xff &(char)input[data_packet_start + 5]);
@@ -161,7 +165,12 @@ int main(int argc, char** argv)
                 ROS_DEBUG_STREAM("Temperature [in C] " << temperature_in_C);
 
                 uint8_t received_message_number = input[data_packet_start + 25];
+
                 ROS_DEBUG("received message number: %i", received_message_number);
+                if(!init_success){
+                    ROS_INFO_STREAM("Reading IMU data successful  ");
+                    init_success = true;
+                }
 
                 if (received_message) // can only check for continuous numbers if already received at least one packet
                 {
