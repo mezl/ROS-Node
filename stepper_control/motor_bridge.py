@@ -44,55 +44,72 @@ GPIO.setup(STEP, GPIO.OUT)
 GPIO.setup(ENABLE, GPIO.OUT)
 GPIO.output(ENABLE, False) #/EN low enable
 
-step_speed = 500
+step_speed = 1000
 step_pin = GPIO.PWM(STEP,step_speed)
 
-MICRO_STEPPING = 1
+MICRO_STEPPING = 16
 FULL_STEPS = 200.0
 STEPS_PER_DEGREE = float(360.0/(FULL_STEPS*MICRO_STEPPING)) #convert degree to steps 
 
 def moveMotor(goal_rad):
+    if motor_state.is_moving:
+        return
+    motor_state.is_moving = True
     #convert rad to degree
+    goal_degree = np.rad2deg(goal_rad)
 
     #given abs goal_rad, we need compute error from current_pos to goal
     error_rad = goal_rad - motor_state.current_pos
 
+    print("Error Rad %f"%error_rad)
     #publish a motor state message before move
     motor_state.error = error_rad
     motor_state.goal_pos = goal_rad 
-    motor_state.is_moving = True
-    pub.publish(motor_state)
+    #pub.publish(motor_state)
 
 
     error_degree = np.rad2deg(error_rad)
     goal_steps = int(error_degree / STEPS_PER_DEGREE)
 
+    print("Error Deg %f"%error_degree)
+    print("goal_steps %d"%goal_steps)
     #check direction 
+    dir_sign = 1
     if goal_steps < 0:
         GPIO.output(DIR, False)
         goal_steps = -goal_steps
+        dir_sign = -1
+        print("Reverse:goal_steps %d"%goal_steps)
     else:
         GPIO.output(DIR, True)
+        print("Forward:goal_steps %d"%goal_steps)
 
 
 
     steps = 0
-    while steps < goal_steps:
+    step_pin.ChangeFrequency(step_speed)
+    while steps < int(goal_steps/10):
+        #print("Move start steps %d, goal %d"%(steps,goal_steps))
         step_pin.start(1)
+        #GPIO.output(STEP, True)
+        #time.sleep(0.01)#100Hz
+        #GPIO.output(STEP, False)
+
         steps += 1
         if steps % 10 == 0: #publish message every 10 steps
             remaining_steps = (goal_steps - steps)
             moved_rad = np.deg2rad(steps*STEPS_PER_DEGREE)
             new_error_degree = remaining_steps*STEPS_PER_DEGREE
-            new_error_rad = np.deg2rad(new_error_degree)
+            new_error_rad = np.deg2rad(new_error_degree*10)
 
-            motor_state.current_pos += moved_rad
+            motor_state.current_pos += np.deg2rad(10*STEPS_PER_DEGREE)*dir_sign*10
+            current_pos_deg = np.rad2deg(motor_state.current_pos)
             motor_state.error = new_error_rad
             #motor_state.goal_pos = goal_rad 
             #motor_state.is_moving = True
             #pub.publish(motor_state)
-            print("Remaining Steps: %d" % remaining_steps)
-        time.sleep(0.01)
+            print("Remaining Steps: %d,Goal %4.2f,Curr %4.2f" % (remaining_steps,goal_degree,current_pos_deg))
+        time.sleep(0.01)#100Hz
     #after move
     motor_state.error = 0.0
     motor_state.current_pos = goal_rad 
@@ -125,6 +142,7 @@ pub = rospy.Publisher('/tilt_controller/state', JointState, queue_size=10)
 rate = rospy.Rate(10) #10Hz
 
 def main():
+    print("Start Stepper Node")
     while not rospy.is_shutdown():
         pub.publish(motor_state)
         rate.sleep()
