@@ -34,10 +34,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(imu_mpu6050 src/mpu6050_serial_to_imu_node.cpp)
-add_executable(imu_mpu6050xz src/mpu6050_serial_to_imu_node2.cpp)
 add_executable(imu_transform src/imu_transform.cpp)
 target_link_libraries(imu_mpu6050 ${catkin_LIBRARIES})
-target_link_libraries(imu_mpu6050xz ${catkin_LIBRARIES})
 target_link_libraries(imu_transform ${catkin_LIBRARIES})
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

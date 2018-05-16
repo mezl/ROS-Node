@@ -102,6 +102,9 @@ int main(int argc, char** argv)
               ROS_DEBUG("data packet length %d less than 28", input.length());
           
           }
+          if(!init_success){
+                ROS_INFO_STREAM("Waiting for serail packet  " << input.length() << " > 28 ");
+          }
           while (input.length() >= 28) // while there might be a complete package in input
           {
             //parse for data packets
@@ -222,6 +225,9 @@ int main(int argc, char** argv)
               }
               else
               {
+                if(!init_success){
+                    ROS_INFO_STREAM("false data_packet_start char");
+                }
                 if (input.length() >= data_packet_start + 28)
                 {
                   input.erase(0, data_packet_start + 1); // delete up to false data_packet_start character so it is not found again
@@ -235,6 +241,9 @@ int main(int argc, char** argv)
             }
             else
             {
+                if(!init_success){
+                    ROS_INFO_STREAM("no start character found in input, so delete everything");
+                }
               // no start character found in input, so delete everything
               input.clear();
             }
@@ -251,6 +260,7 @@ int main(int argc, char** argv)
           serial::Timeout to = serial::Timeout::simpleTimeout(1000);
           ser.setTimeout(to);
           ser.open();
+          //ROS_INFO_STREAM("Serial Port " << port << " open success");
         }
         catch (serial::IOException& e)
         {
@@ -260,7 +270,7 @@ int main(int argc, char** argv)
 
         if(ser.isOpen())
         {
-          ROS_DEBUG_STREAM("Serial port " << ser.getPort() << " initialized and opened.");
+          ROS_INFO_STREAM("Serial port " << ser.getPort() << " initialized and opened.");
         }
       }
     }
