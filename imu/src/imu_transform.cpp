@@ -25,14 +25,22 @@ void obtainValues(const sensor_msgs::Imu::ConstPtr &msg)
     float ori_x = msg->orientation.x + dx;
     float ori_y = msg->orientation.y + dy;
     float ori_z = msg->orientation.z + dz;
+    float ori_w = msg->orientation.w + dz;
+    geometry_msgs::Quaternion imu_q;// = msg->orientation;
+    imu_q.x = ori_w;
+    imu_q.y = ori_z*-1;
+    imu_q.z = ori_y;
+    imu_q.w = ori_x*-1;
+        
 
+    tf::Quaternion q;
+
+    tf::quaternionMsgToTF(imu_q, q);
     
     //perform transform
     static tf::TransformBroadcaster br;
     tf::Transform transform;
-    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-    tf::Quaternion q;
-    q.setRPY(ori_z, ori_y, ori_x);
+    transform.setOrigin( tf::Vector3(imu_q.z, imu_q.y, imu_q.x) );
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "imu_link", "laser"));
 }

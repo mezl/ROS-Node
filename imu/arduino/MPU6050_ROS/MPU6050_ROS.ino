@@ -13,7 +13,7 @@
 
 MPU6050 mpu;
 
-#define BAUD 9600
+#define BAUD 57600
 #ifdef ESP8266
 #define INTERRUPT_PIN 15  // use pin 2 on Arduino Uno & most boards
 #define LED_PIN 0 // (Arduino is 13, Teensy is 11, Teensy++ is 6,Pro Micro RXLED 17)
