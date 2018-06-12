@@ -105,7 +105,7 @@ int main(int argc, char** argv)
           
           }
           if(!init_success){
-                ROS_INFO_STREAM("Waiting for serail packet  " << input.length() << " > 28 ");
+                ROS_DEBUG_STREAM("Waiting for serail packet  " << input.length() << " > 28 ");
           }
           while (input.length() >= 28) // while there might be a complete package in input
           {
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
             else
             {
                 if(!init_success){
-                    ROS_INFO_STREAM("no start character found in input, so delete everything");
+                    ROS_DEBUG_STREAM("no start character found in input, so delete everything");
                 }
               // no start character found in input, so delete everything
               input.clear();
