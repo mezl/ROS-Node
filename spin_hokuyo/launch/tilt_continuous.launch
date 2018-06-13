@@ -51,9 +51,9 @@
   />
 
   <node
-  	name="hokuyo_node"
-    pkg="hokuyo_node"
-    type="hokuyo_node"
+  	name="urg_node"
+    pkg="urg_node"
+    type="urg_node"
     output="screen">
 
     <rosparam>
@@ -61,6 +61,7 @@
       max_ang: 2.0071
     </rosparam>
   </node>
+
 
   <node
     name="hokuyo_robot_filter"
