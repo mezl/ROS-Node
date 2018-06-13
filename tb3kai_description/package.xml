@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>tb3kai_description</name>
+  <version>0.2.1</version>
+  <description>
+    3D models of the TurtleBot3 with spin hokuyo for simulation and visualization
+  </description>
+  <license>Apache 2.0</license>
+  <author email="mezlxx@gmail.com">Kai Chang</author>
+  <maintainer email="mezlxx@gmail.com">Kai Chang</maintainer>
+  <url type="bugtracker">https://github.com/ROBOTIS-GIT/turtlebot3/issues</url>
+  <url type="repository">https://github.com/ROBOTIS-GIT/turtlebot3</url>
+  <url type="website">http://turtlebot3.robotis.com</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+</package>
