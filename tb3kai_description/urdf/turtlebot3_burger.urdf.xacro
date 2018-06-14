@@ -21,7 +21,7 @@
       <geometry>
         <mesh filename="package://tb3kai_description/meshes/bases/burger_base.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-      <material name="light_black"/>
+      <material name="orange"/>
     </visual>
 
     <collision>
@@ -166,26 +166,92 @@
     </inertial>
   </link>
 
-  <!-- Add it for Spin Hokuyo -->
-  <joint name="laser_servo_joint" type="continuous">
+  <!-- AX-18 Motor and stand -->
+  <joint name="laser_servo_base_joint" type="fixed">
     <parent link="base_link"/>
     <child link="laser_servo_link"/>
-    <!--Change this line for different laser position -->
-    <!--origin xyz="0.0 0.00 0.150" rpy="${-M_PI*0.5} ${M_PI*0.5} ${M_PI*1.0}"/-->
-    <origin xyz="0 0.031 ${0.158+0.038+0.009}" rpy="0 0 0"/>
+    <origin xyz="0 ${0.051+0.002-0.007} ${0.158+0.038+0.0071}" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
 
   <link name="laser_servo_link">
     <visual>
+        <origin xyz="0.0003 0 -0.0168" rpy="${M_PI*0.5} 0 -${M_PI*0.5}"/>
+      <geometry>
+        <mesh filename="package://tb3kai_description/meshes/bases/Ax18.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+  </link>
+  <!-- End of AX-18 -->
+
+  <!-- Add it for Spin Hokuyo -->
+  <joint name="laser_holder_joint" type="continuous"><!-- change type to revolute with limited range -->
+    <parent link="base_link"/>
+    <child link="laser_holder_link"/>
+    <!--Change this line for different laser position -->
+    <!--origin xyz="0.0 0.00 0.150" rpy="${-M_PI*0.5} ${M_PI*0.5} ${M_PI*1.0}"/-->
+    <origin xyz="0 0.026 ${0.158+0.038+0.007}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="laser_holder_link">
+    <visual>
         <origin xyz="0 0 -0.009" rpy="-${M_PI*0.5} 0 ${M_PI}"/>
       <geometry>
         <mesh filename="package://tb3kai_description/meshes/sensors/laserHolder.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-      <material name="dark"/>
+      <material name="red"/>
     </visual>
   </link>
   <!-- End of Spin Hokuyo -->
+
+
+  <!-- URG Hokuyo -->
+  <joint name="holder_urg_joint" type="fixed">
+      <axis xyz="0 0 1" />
+      <origin xyz="0 -0.032 ${0.009+0.0054}" rpy="0 0 0"/>
+      <parent link="laser_holder_link"/>
+      <child link="urg_link"/>
+  </joint>
+
+  <link name="urg_link">
+      <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+              <box size="0.1 0.1 0.1"/>
+          </geometry>
+      </collision>
+      <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+              <mesh filename="package://tb3kai_description/meshes/sensors/hokuyo.dae"/>
+          </geometry>
+      </visual>
+      <inertial>
+          <mass value="1e-5" />
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+  </link>
+  <!-- End URG Hokuyo -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   <joint name="depth_camera_joint" type="fixed">
