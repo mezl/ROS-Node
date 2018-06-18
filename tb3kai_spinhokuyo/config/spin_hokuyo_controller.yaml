@@ -1,0 +1,12 @@
+spin_hokuyo:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 125
+
+  # Position Controllers ---------------------------------------
+  joint1_position:
+    type: effort_controllers/JointPositionController
+    joint: laser_holder_joint
+    pid: {p: 10.0, i: 0.0, d: 0.0}
+

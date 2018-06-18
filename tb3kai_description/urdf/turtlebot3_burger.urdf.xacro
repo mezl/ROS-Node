@@ -206,6 +206,24 @@
   </link>
   <!-- End of Spin Hokuyo -->
 
+  <!-- Transmission AX-18A ID 3 -->
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="laser_holder_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="ax18a3">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
+
+
+
+
 
   <!-- URG Hokuyo -->
   <joint name="holder_urg_joint" type="fixed">

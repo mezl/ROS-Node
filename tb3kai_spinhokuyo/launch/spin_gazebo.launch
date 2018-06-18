@@ -1,0 +1,35 @@
+<launch>
+  <arg name="model" default="tb3" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="gui" default="true" />
+
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo_ros)/worlds/empty.world"/>
+    <arg name="paused" value="true"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!--param name="robot_description" command="$(find xacro)/xacro inorder $(find tb3kai_spinhokuyo)/urdf/tb3.urdf.xacro" /-->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find tb3kai_spinhokuyo)/urdf/turtlebot3_burger.urdf.xacro" />
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model tb3 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description -reference_frame world" />
+
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <rosparam param="source_list">["/spin_hokuyo/joint_states"]</rosparam>
+  </node>
+  <!-- ros_control robotis manipulator launch file -->
+  <include file="$(find tb3kai_spinhokuyo)/launch/spin_hokuyo_controller.launch"/>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" respawn="false" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <!--remap from="/joint_states"  to="/spin_hokuyo/joint_states" /-->
+  </node>
+    <node name="rviz" pkg="rviz" type="rviz" args="$(find tb3kai_spinhokuyo)/rviz/model.rviz" required="true" />
+</launch>

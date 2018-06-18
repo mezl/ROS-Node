@@ -1,0 +1,1 @@
+roslaunch tb3kai_spinhokuyo view_model.launch
