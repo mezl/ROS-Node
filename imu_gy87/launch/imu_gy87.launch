@@ -2,8 +2,8 @@
 
 <launch>
 	<node name="imu"
-		pkg="gy_87"
-		type="gy_87_node"
+		pkg="imu_gy87"
+		type="imu_gy87_node"
 		output="screen"
 		required="true"
 		launch-prefix="sudo -E"
