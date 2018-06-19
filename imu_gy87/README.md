@@ -1,4 +1,4 @@
-# GY-87 for ROS on Raspberry Pi 3
+# IMU GY-87 for ROS on Raspberry Pi 3
 Implementation of the sensors on the GY-87 breakout board in ROS for Raspberry Pi. It is reading out the sensor MPU6050 and HMC5883L which is connected to the auxilary I2C port of the former sensor.
 
 The pressure sensor BMP180 and the core temperature of the MPU6050 are not read out.
@@ -9,9 +9,9 @@ This package is using libraries developed for Arduino and utilizing them with an
 
 Two topics are being published with 50 Hz:
 
-* `/gy_87/imu_data`: Linear acceleration, angular velocity read from the MPU6050. Quaternion of the orientation calculated with Madgwick's AHRS algorithm.
+* `/imu`: Linear acceleration, angular velocity read from the MPU6050. Quaternion of the orientation calculated with Madgwick's AHRS algorithm.
 
-* `/gy_87/magnetic_field`: Magnetic field read from HMC5883L.
+* `/magnetic_field`: Magnetic field read from HMC5883L.
 
 All data is without covariance matrices.
 
@@ -25,14 +25,14 @@ Clone this package to your catkin workspace source folder:
 
 ```
 cd ~/catkin_ws/src/
-git clone https://github.com/smcgit/gy_87.git
+git clone https://github.com/mezl/ROS-Node/imu_gy87.git
 ```
 
 Build the package:
 
 ```
 cd ~/catkin_ws/
-catkin_make --pkg=gy_87 && . devel/setup.bash
+catkin_make --pkg=imu_gy87 && . devel/setup.bash
 ```
 
 
@@ -41,7 +41,7 @@ catkin_make --pkg=gy_87 && . devel/setup.bash
 Since the node needs `sudo` to use I2C, the node cannot be run directly (it will end with a `Segmentation fault` message). It needs to be run with the included launch file instead. Type the following to run the node:
 
 ```
-roslaunch gy_87 gy_87.launch
+roslaunch imu_gy87 imu_gy87.launch
 ```
 
 ## Stopping the Node
@@ -61,7 +61,7 @@ There might be a bug in ROS where a node run with sudo is not exiting completely
 ## Credits
 
 This package is utilising work from the creators of the following libraries:
-
+* [gy-87](https://github.com/smcgit/gy_87.git)
 * [bcm2835](http://www.airspayce.com/mikem/bcm2835/index.html)
 * [I2Cdev](https://github.com/jrowberg/i2cdevlib/tree/master/RaspberryPi_bcm2835/I2Cdev), [MPU6050](https://github.com/jrowberg/i2cdevlib/tree/master/Arduino/MPU6050) and [HMC5883L](https://github.com/jrowberg/i2cdevlib/tree/master/Arduino/HMC5883L)
 * [Madgwick's AHRS algorithm](http://x-io.co.uk/open-source-imu-and-ahrs-algorithms/)
